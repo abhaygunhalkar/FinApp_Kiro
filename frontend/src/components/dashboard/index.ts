@@ -1,0 +1,8 @@
+export { default as MetricsCards } from './MetricsCards';
+export { default as ActivityFeed } from './ActivityFeed';
+export { default as PortfolioGrowthChart } from './PortfolioGrowthChart';
+export { default as SectorAllocationChart } from './SectorAllocationChart';
+export { default as GainersLosersChart } from './GainersLosersChart';
+export { default as DividendForecastChart } from './DividendForecastChart';
+export { default as WatchlistMoversChart } from './WatchlistMoversChart';
+export { default as TradeHistory } from './TradeHistory';

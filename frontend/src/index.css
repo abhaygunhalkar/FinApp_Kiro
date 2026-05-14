@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Professional finance app color theme */
+:root {
+  --color-primary: #1e3a5f;
+  --color-primary-light: #2d5a8e;
+  --color-accent: #0ea5e9;
+  --color-accent-light: #38bdf8;
+  --color-surface: #f8fafc;
+  --color-surface-elevated: #ffffff;
+}
+
+.dark {
+  --color-primary: #0f172a;
+  --color-primary-light: #1e293b;
+  --color-accent: #38bdf8;
+  --color-accent-light: #7dd3fc;
+  --color-surface: #0f172a;
+  --color-surface-elevated: #1e293b;
+}
+
+/* Gradient backgrounds */
+.bg-finance-gradient {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+}
+
+.dark .bg-finance-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+}
+
+.bg-surface-gradient {
+  background: linear-gradient(180deg, #f0f9ff 0%, #f8fafc 100%);
+}
+
+.dark .bg-surface-gradient {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+}
