@@ -82,3 +82,6 @@ exclude_lines = [
 [tool.taskipy.tasks]
 lint = "black --check . && ruff check . && mypy ."
 format = "black . && ruff check --fix ."
+
+[tool.setuptools.packages.find]
+include = ["app*"]

@@ -1,6 +1,15 @@
 # FinApp_Kiro
 Finance Portfolio Management
 
+# Running
+
+Frontend:
+npm run dev
+http://localhost:3000/
+
+Backend:
+
+
 # Personal Finance Dashboard
 
 A locally hosted stock portfolio tracker with a React frontend and FastAPI backend. All data is stored in a local SQLite file. Market data is fetched from Yahoo Finance (yfinance).
@@ -16,6 +25,17 @@ pip install -e ".[dev]"
 alembic upgrade head
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+
+** ENV
+# Database connection URL (SQLite file path)
+DATABASE_URL=sqlite:///./finance_tracker.db
+
+# Market data provider (currently only yfinance is supported)
+MARKET_API_PROVIDER=yfinance
+
+# Interval in minutes between automatic market data refreshes (1-1440)
+REFRESH_INTERVAL_MINUTES=15
+
 
 **Frontend:**
 ```bash
