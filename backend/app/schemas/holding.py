@@ -16,6 +16,7 @@ class HoldingCreate(BaseModel):
     industry: str | None = None
     broker: str | None = None
     notes: str | None = None
+    holding_type: str | None = None
 
 
 class HoldingUpdate(BaseModel):
@@ -46,6 +47,7 @@ class HoldingResponse(BaseModel):
     dividend_yield: float
     annual_dividend_income: float
     broker: str | None = None
+    holding_type: str
     created_at: datetime
     updated_at: datetime
 

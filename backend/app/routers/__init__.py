@@ -1,9 +1,10 @@
 """FastAPI router modules."""
 
-from . import dashboard, holdings, market, transactions, watchlist
+from . import dashboard, etf_holdings, holdings, market, transactions, watchlist
 
 __all__ = [
     "dashboard",
+    "etf_holdings",
     "holdings",
     "market",
     "transactions",

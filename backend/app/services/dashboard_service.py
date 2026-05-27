@@ -76,10 +76,17 @@ class DashboardService:
             if time_since_fetch > stale_threshold:
                 stale_data = True
 
+        etf_holdings = HoldingsRepository.get_all_by_type(db, 'etf')
+        etf_unrealized_gain = sum(
+            (h.current_price - h.average_buy_price) * h.quantity
+            for h in etf_holdings
+        )
+
         return DashboardSummary(
             total_portfolio_value=total_portfolio_value,
             total_invested=total_invested,
             unrealized_gain=unrealized_gain,
+            etf_unrealized_gain=etf_unrealized_gain,
             realized_gain=realized_gain,
             daily_change=daily_change,
             annual_dividend_income=annual_dividend_income,

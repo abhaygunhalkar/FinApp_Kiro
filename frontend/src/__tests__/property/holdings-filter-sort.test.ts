@@ -96,6 +96,8 @@ const holdingArbitrary: fc.Arbitrary<Holding> = fc.record({
   sector: fc.oneof(fc.constant(null), fc.constantFrom(...SECTORS)),
   industry: fc.oneof(fc.constant(null), fc.constant('Software'), fc.constant('Banking')),
   dividend_yield: fc.double({ min: 0, max: 20, noNaN: true }),
+  holding_type: fc.constantFrom<'stock' | 'etf'>('stock', 'etf'),
+  broker: fc.oneof(fc.constant(null), fc.constant('Robinhood'), fc.constant('Schwab')),
   annual_dividend_income: fc.double({ min: 0, max: 50000, noNaN: true }),
   created_at: fc.constant('2024-01-01T00:00:00Z'),
   updated_at: fc.constant('2024-06-01T00:00:00Z'),

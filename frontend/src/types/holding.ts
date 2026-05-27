@@ -10,6 +10,7 @@ export interface Holding {
   unrealized_gain: number;
   unrealized_gain_pct: number;
   allocation_pct: number;
+  holding_type: 'stock' | 'etf';
   sector: string | null;
   industry: string | null;
   dividend_yield: number;

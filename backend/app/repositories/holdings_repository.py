@@ -24,6 +24,31 @@ class HoldingsRepository:
         return db.query(Holding).filter(Holding.ticker == ticker).first()
 
     @staticmethod
+    def get_by_ticker_and_type(
+        db: Session, ticker: str, holding_type: str
+    ) -> Holding | None:
+        """Retrieve a holding by ticker and type."""
+        return (
+            db.query(Holding)
+            .filter(Holding.ticker == ticker, Holding.holding_type == holding_type)
+            .first()
+        )
+
+    @staticmethod
+    def get_all_by_type(db: Session, holding_type: str) -> list[Holding]:
+        """Retrieve all holdings by type."""
+        return list(db.query(Holding).filter(Holding.holding_type == holding_type).all())
+
+    @staticmethod
+    def get_by_id_and_type(db: Session, holding_id: int, holding_type: str) -> Holding | None:
+        """Retrieve a holding by ID and type."""
+        return (
+            db.query(Holding)
+            .filter(Holding.id == holding_id, Holding.holding_type == holding_type)
+            .first()
+        )
+
+    @staticmethod
     def create(db: Session, holding: Holding) -> Holding:
         """Create a new holding record."""
         try:

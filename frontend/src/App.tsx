@@ -6,6 +6,7 @@ import { useUIStore } from './store/uiStore';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Holdings from './pages/Holdings';
+import ETFHoldings from './pages/ETFHoldings';
 import Watchlist from './pages/Watchlist';
 import TradeHistory from './pages/TradeHistory';
 import Settings from './pages/Settings';
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <Dashboard /> },
       { path: '/holdings', element: <Holdings /> },
+      { path: '/etf-holdings', element: <ETFHoldings /> },
       { path: '/watchlist', element: <Watchlist /> },
       { path: '/trades', element: <TradeHistory /> },
       { path: '/settings', element: <Settings /> },

@@ -85,6 +85,21 @@ def verify_database() -> None:
                     integrity_result,
                 )
                 sys.exit(1)
+
+            # Ensure the holdings table has the new holding_type column.
+            pragma_result = conn.execute(text("PRAGMA table_info('holdings')"))
+            columns = [row[1] for row in pragma_result.fetchall()]
+            if 'holding_type' not in columns:
+                logger.info(
+                    "Existing database is missing holdings.holding_type; applying compatibility patch."
+                )
+                conn.execute(
+                    text(
+                        "ALTER TABLE holdings ADD COLUMN holding_type VARCHAR(20) NOT NULL DEFAULT 'stock'"
+                    )
+                )
+                logger.info("Added missing holdings.holding_type column.")
+
         logger.info("Database integrity check passed.")
     except Exception as exc:
         logger.error(

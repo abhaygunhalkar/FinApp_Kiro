@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCreateHolding, useUpdateHolding } from '../../hooks/useHoldings';
+import { useCreateETFHolding } from '../../hooks/useETFHoldings';
 import apiClient from '../../api/client';
 import type { Holding, HoldingCreate } from '../../types';
 import { AxiosError } from 'axios';
 
 interface HoldingFormProps {
   holding?: Holding | null;
+  holdingType?: 'stock' | 'etf';
   onClose: () => void;
 }
 
@@ -34,9 +36,9 @@ interface TickerInfo {
   notes: string | null;
 }
 
-export default function HoldingForm({ holding, onClose }: HoldingFormProps) {
+export default function HoldingForm({ holding, holdingType = 'stock', onClose }: HoldingFormProps) {
   const isEditing = !!holding;
-  const createMutation = useCreateHolding();
+  const createMutation = holdingType === 'etf' ? useCreateETFHolding() : useCreateHolding();
   const updateMutation = useUpdateHolding();
 
   const [formData, setFormData] = useState<FormData>({

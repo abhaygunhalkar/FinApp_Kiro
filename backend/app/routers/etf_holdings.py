@@ -1,4 +1,4 @@
-"""Holdings API router."""
+"""ETF holdings API router."""
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
@@ -9,23 +9,27 @@ from app.schemas.common import ApiResponse
 from app.schemas.holding import HoldingCreate, HoldingResponse, HoldingUpdate
 from app.services.holdings_service import HoldingsService
 
-router = APIRouter(prefix="/api/holdings", tags=["holdings"])
+router = APIRouter(prefix="/api/etf-holdings", tags=["etf-holdings"])
 
 
 @router.get("", response_model=ApiResponse[list[HoldingResponse]])
-def get_holdings(db: Session = Depends(get_db)) -> ApiResponse[list[HoldingResponse]]:
-    """Retrieve all stock holdings with calculated metrics."""
-    holdings = HoldingsService.get_all_holdings(db, holding_type="stock")
+def get_etf_holdings(
+    db: Session = Depends(get_db),
+) -> ApiResponse[list[HoldingResponse]]:
+    """Retrieve all ETF holdings with calculated metrics."""
+    holdings = HoldingsService.get_all_holdings(db, holding_type="etf")
     return ApiResponse(success=True, data=holdings, error=None)
 
 
 @router.get("/{holding_id}", response_model=ApiResponse[HoldingResponse])
-def get_holding(
+def get_etf_holding(
     holding_id: int, db: Session = Depends(get_db)
 ) -> JSONResponse | ApiResponse[HoldingResponse]:
-    """Retrieve a single stock holding by ID."""
+    """Retrieve a single ETF holding by ID."""
     try:
-        holding = HoldingsService.get_holding(db, holding_id, holding_type="stock")
+        holding = HoldingsService.get_holding(
+            db, holding_id, holding_type="etf"
+        )
     except HTTPException as exc:
         return JSONResponse(
             status_code=exc.status_code,
@@ -35,12 +39,14 @@ def get_holding(
 
 
 @router.post("", response_model=ApiResponse[HoldingResponse], status_code=201)
-def create_holding(
+def create_etf_holding(
     data: HoldingCreate, db: Session = Depends(get_db)
 ) -> JSONResponse | ApiResponse[HoldingResponse]:
-    """Create a new holding with an initial buy transaction."""
+    """Create a new ETF holding with an initial buy transaction."""
     try:
-        holding = HoldingsService.create_holding(db, data)
+        holding = HoldingsService.create_holding(
+            db, data, holding_type="etf"
+        )
     except HTTPException as exc:
         return JSONResponse(
             status_code=exc.status_code,
@@ -55,12 +61,14 @@ def create_holding(
 
 
 @router.put("/{holding_id}", response_model=ApiResponse[HoldingResponse])
-def update_holding(
+def update_etf_holding(
     holding_id: int, data: HoldingUpdate, db: Session = Depends(get_db)
 ) -> JSONResponse | ApiResponse[HoldingResponse]:
-    """Update editable fields of a stock holding."""
+    """Update editable fields of an ETF holding."""
     try:
-        holding = HoldingsService.update_holding(db, holding_id, data, holding_type="stock")
+        holding = HoldingsService.update_holding(
+            db, holding_id, data, holding_type="etf"
+        )
     except HTTPException as exc:
         return JSONResponse(
             status_code=exc.status_code,
@@ -70,12 +78,12 @@ def update_holding(
 
 
 @router.delete("/{holding_id}", response_model=ApiResponse[None])
-def delete_holding(
+def delete_etf_holding(
     holding_id: int, db: Session = Depends(get_db)
 ) -> JSONResponse | ApiResponse[None]:
-    """Delete a stock holding and return invested amount to cash balance."""
+    """Delete an ETF holding and return invested amount to cash balance."""
     try:
-        HoldingsService.delete_holding(db, holding_id, holding_type="stock")
+        HoldingsService.delete_holding(db, holding_id, holding_type="etf")
     except HTTPException as exc:
         return JSONResponse(
             status_code=exc.status_code,

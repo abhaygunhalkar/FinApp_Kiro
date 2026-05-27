@@ -2,6 +2,7 @@ export interface DashboardSummary {
   total_portfolio_value: number;
   total_invested: number;
   unrealized_gain: number;
+  etf_unrealized_gain: number;
   realized_gain: number;
   daily_change: number;
   annual_dividend_income: number;

@@ -8,7 +8,7 @@ interface MetricCardProps {
   label: string;
   value: string;
   changeValue?: number;
-  isCurrency?: boolean;
+  variant?: 'default' | 'blue' | 'purple';
 }
 
 function formatCurrency(value: number): string {
@@ -30,13 +30,27 @@ function getChangeColor(value: number): string {
   return 'text-gray-500 dark:text-gray-400';
 }
 
-function MetricCard({ label, value, changeValue }: MetricCardProps) {
+function MetricCard({ label, value, changeValue, variant = 'default' }: MetricCardProps) {
+  const baseClasses = 'rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200';
+  const variantClasses =
+    variant === 'blue'
+      ? 'bg-gradient-to-br from-sky-700 via-sky-800 to-sky-900 text-white shadow-sky-700/40 border border-transparent'
+      : variant === 'purple'
+      ? 'bg-gradient-to-br from-violet-700 via-violet-800 to-violet-900 text-white shadow-violet-700/40 border border-transparent'
+      : 'border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800 text-slate-900 dark:text-white';
+  const labelClasses = variant === 'default' ? 'text-sm font-medium text-slate-500 dark:text-slate-400' : 'text-sm font-medium text-white/90';
+  const valueClasses = variant === 'default' ? 'mt-2 text-2xl font-bold text-slate-900 dark:text-white' : 'mt-2 text-2xl font-bold text-white';
+  const changeClasses =
+    variant === 'purple'
+      ? 'mt-1 text-sm font-semibold text-white/90'
+      : `mt-1 text-sm font-semibold ${getChangeColor(changeValue ?? 0)}`;
+
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
+    <div className={`${baseClasses} ${variantClasses}`}>
+      <p className={labelClasses}>{label}</p>
+      <p className={valueClasses}>{value}</p>
       {changeValue !== undefined && (
-        <p className={`mt-1 text-sm font-semibold ${getChangeColor(changeValue)}`}>
+        <p className={changeClasses}>
           {changeValue > 0 ? '↑ +' : changeValue < 0 ? '↓ ' : ''}
           {formatCurrency(changeValue)}
         </p>
@@ -85,6 +99,12 @@ export default function MetricsCards({ data }: MetricsCardsProps) {
           label="Unrealized Gain/Loss"
           value={formatCurrency(data.unrealized_gain)}
           changeValue={data.unrealized_gain}
+          variant="blue"
+        />
+        <MetricCard
+          label="ETF Unrealized Gain/Loss"
+          value={formatCurrency(data.etf_unrealized_gain)}
+          variant="purple"
         />
         <MetricCard
           label="Realized Gain/Loss"

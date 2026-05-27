@@ -12,6 +12,7 @@ class DashboardSummary(BaseModel):
     total_portfolio_value: float
     total_invested: float
     unrealized_gain: float
+    etf_unrealized_gain: float
     realized_gain: float
     daily_change: float
     annual_dividend_income: float

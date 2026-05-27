@@ -1,5 +1,6 @@
 export { queryClient } from './queryClient';
 export { useHoldings, useHolding, useCreateHolding, useUpdateHolding, useDeleteHolding } from './useHoldings';
+export { useETFHoldings, useCreateETFHolding } from './useETFHoldings';
 export { useTransactions, useCreateTransaction, useDeleteTransaction } from './useTransactions';
 export {
   useWatchlist,

@@ -8,6 +8,7 @@ const emptySummary: DashboardSummary = {
   total_portfolio_value: 0,
   total_invested: 0,
   unrealized_gain: 0,
+  etf_unrealized_gain: 0,
   realized_gain: 0,
   daily_change: 0,
   annual_dividend_income: 0,

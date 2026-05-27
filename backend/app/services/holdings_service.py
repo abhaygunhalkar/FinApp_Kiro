@@ -16,9 +16,15 @@ class HoldingsService:
     """Business logic for holdings CRUD and portfolio metric calculations."""
 
     @staticmethod
-    def _calculate_total_portfolio_value(db: Session) -> float:
-        """Calculate the total portfolio value across all holdings."""
-        holdings = HoldingsRepository.get_all(db)
+    def _calculate_total_portfolio_value(
+        db: Session, holding_type: str | None = None
+    ) -> float:
+        """Calculate the total portfolio value for a given holding type."""
+        holdings = (
+            HoldingsRepository.get_all(db)
+            if holding_type is None
+            else HoldingsRepository.get_all_by_type(db, holding_type)
+        )
         return sum(h.current_price * h.quantity for h in holdings)
 
     @staticmethod
@@ -81,20 +87,26 @@ class HoldingsService:
             dividend_yield=dividend_yield,
             annual_dividend_income=annual_dividend_income,
             broker=holding.broker,
+            holding_type=holding.holding_type,
             created_at=holding.created_at,
             updated_at=holding.updated_at,
         )
 
     @staticmethod
-    def get_all_holdings(db: Session) -> list[HoldingResponse]:
+    def get_all_holdings(
+        db: Session, holding_type: str | None = None
+    ) -> list[HoldingResponse]:
         """Retrieve all holdings with calculated metrics.
 
-        Returns a list of HoldingResponse objects with unrealized gain,
-        allocation percentage, and annual dividend income computed.
+        If holding_type is provided, only holdings of that type are returned.
         """
-        holdings = HoldingsRepository.get_all(db)
-        total_portfolio_value = sum(
-            h.current_price * h.quantity for h in holdings
+        holdings = (
+            HoldingsRepository.get_all(db)
+            if holding_type is None
+            else HoldingsRepository.get_all_by_type(db, holding_type)
+        )
+        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(
+            db, holding_type
         )
 
         return [
@@ -103,24 +115,34 @@ class HoldingsService:
         ]
 
     @staticmethod
-    def get_holding(db: Session, holding_id: int) -> HoldingResponse:
+    def get_holding(
+        db: Session, holding_id: int, holding_type: str | None = None
+    ) -> HoldingResponse:
         """Retrieve a single holding by ID with calculated metrics.
 
         Raises HTTPException 404 if the holding does not exist.
         """
-        holding = HoldingsRepository.get_by_id(db, holding_id)
+        holding = (
+            HoldingsRepository.get_by_id(db, holding_id)
+            if holding_type is None
+            else HoldingsRepository.get_by_id_and_type(db, holding_id, holding_type)
+        )
         if holding is None:
             raise HTTPException(status_code=404, detail="Holding not found")
 
-        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(db)
+        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(
+            db, holding_type
+        )
         return HoldingsService._build_holding_response(holding, total_portfolio_value)
 
     @staticmethod
-    def create_holding(db: Session, data: HoldingCreate) -> HoldingResponse:
+    def create_holding(
+        db: Session, data: HoldingCreate, holding_type: str = 'stock'
+    ) -> HoldingResponse:
         """Create a new holding with an initial buy transaction.
 
         Steps:
-        1. Check if ticker already exists (reject with error if so)
+        1. Check if ticker already exists for this holding type
         2. Fetch current market price from yfinance
         3. Create Holding record
         4. Create initial Transaction record (type="buy", quantity and price
@@ -131,12 +153,14 @@ class HoldingsService:
         """
         from app.services.market_data_service import MarketDataService
 
-        # Check for duplicate ticker
-        existing = HoldingsRepository.get_by_ticker(db, data.ticker)
+        # Check for duplicate ticker in this holding type
+        existing = HoldingsRepository.get_by_ticker_and_type(
+            db, data.ticker, holding_type
+        )
         if existing is not None:
             raise HTTPException(
                 status_code=400,
-                detail=f"A holding for ticker '{data.ticker}' already exists",
+                detail=f"A {holding_type} holding for ticker '{data.ticker}' already exists",
             )
 
         # Fetch current market price
@@ -145,8 +169,6 @@ class HoldingsService:
         quote = MarketDataService.fetch_quote(data.ticker)
         if quote is not None:
             current_price = quote.current_price
-            # Cap dividend yield at 20% — yfinance can report inflated yields
-            # for ETFs that include return-of-capital distributions
             raw_yield = quote.dividend_yield or 0.0
             dividend_yield = min(raw_yield, 0.20)
 
@@ -157,6 +179,7 @@ class HoldingsService:
             quantity=data.quantity,
             average_buy_price=data.buy_price,
             current_price=current_price,
+            holding_type=holding_type,
             sector=data.sector,
             industry=data.industry,
             dividend_yield=dividend_yield,
@@ -185,34 +208,46 @@ class HoldingsService:
         # Refresh holding to get updated timestamps
         db.refresh(holding)
 
-        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(db)
+        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(
+            db, holding_type
+        )
         return HoldingsService._build_holding_response(holding, total_portfolio_value)
 
     @staticmethod
     def update_holding(
-        db: Session, holding_id: int, data: HoldingUpdate
+        db: Session,
+        holding_id: int,
+        data: HoldingUpdate,
+        holding_type: str | None = None,
     ) -> HoldingResponse:
         """Update editable fields of a holding.
 
         Only company_name, sector, industry, and notes are editable.
         Raises HTTPException 404 if the holding does not exist.
         """
-        holding = HoldingsRepository.get_by_id(db, holding_id)
+        holding = (
+            HoldingsRepository.get_by_id(db, holding_id)
+            if holding_type is None
+            else HoldingsRepository.get_by_id_and_type(db, holding_id, holding_type)
+        )
         if holding is None:
             raise HTTPException(status_code=404, detail="Holding not found")
 
-        # Update only provided fields
         update_data = data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(holding, field, value)
 
         holding = HoldingsRepository.update(db, holding)
 
-        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(db)
+        total_portfolio_value = HoldingsService._calculate_total_portfolio_value(
+            db, holding_type
+        )
         return HoldingsService._build_holding_response(holding, total_portfolio_value)
 
     @staticmethod
-    def delete_holding(db: Session, holding_id: int) -> None:
+    def delete_holding(
+        db: Session, holding_id: int, holding_type: str | None = None
+    ) -> None:
         """Delete a holding and return invested amount to cash balance.
 
         Steps:
@@ -220,15 +255,17 @@ class HoldingsService:
         2. Increase cash balance by (quantity × average_buy_price)
         3. Delete holding (cascade deletes transactions)
         """
-        holding = HoldingsRepository.get_by_id(db, holding_id)
+        holding = (
+            HoldingsRepository.get_by_id(db, holding_id)
+            if holding_type is None
+            else HoldingsRepository.get_by_id_and_type(db, holding_id, holding_type)
+        )
         if holding is None:
             raise HTTPException(status_code=404, detail="Holding not found")
 
-        # Return invested amount to cash balance
         return_amount = holding.quantity * holding.average_buy_price
         cash_balance = CashBalanceRepository.get_balance(db)
         new_balance = cash_balance.balance + return_amount
         CashBalanceRepository.update_balance(db, new_balance)
 
-        # Delete holding (cascade deletes transactions)
         HoldingsRepository.delete(db, holding_id)

@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardIcon },
   { to: '/holdings', label: 'Holdings', icon: HoldingsIcon },
+  { to: '/etf-holdings', label: 'ETF Holdings', icon: ETFIcon },
   { to: '/watchlist', label: 'Watchlist', icon: WatchlistIcon },
   { to: '/trades', label: 'Trade History', icon: TradesIcon },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
@@ -125,6 +126,20 @@ function HoldingsIcon() {
         d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
         clipRule="evenodd"
       />
+    </svg>
+  );
+}
+
+function ETFIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4z" />
+      <path d="M6 10h8M6 13h8M9 7h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
