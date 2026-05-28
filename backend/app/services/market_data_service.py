@@ -251,8 +251,8 @@ class MarketDataService:
         try:
             stock = yf.Ticker(ticker)
 
-            # Daily RSI: need ~30 days of daily data for 14-period RSI
-            daily_hist = stock.history(period="1mo", interval="1d")
+            # Daily RSI: use 15 days of daily closes to calculate a 14-period RSI
+            daily_hist = stock.history(period="15d", interval="1d")
             if daily_hist is not None and len(daily_hist) >= RSI_PERIOD + 1:
                 daily_closes = daily_hist["Close"].tolist()
                 rsi_daily = calculate_rsi(daily_closes, RSI_PERIOD)
