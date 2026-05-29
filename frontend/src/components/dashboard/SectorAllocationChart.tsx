@@ -7,7 +7,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   Cell,
   LabelList,
 } from 'recharts';
@@ -83,7 +82,7 @@ export default function SectorAllocationChart() {
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm text-gray-900 dark:text-gray-100">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
         Sector Allocation
       </h3>
@@ -124,7 +123,6 @@ export default function SectorAllocationChart() {
               borderRadius: '0.375rem',
             }}
           />
-          <Legend wrapperStyle={{ fontSize: '12px' }} />
           <Bar dataKey="value" isAnimationActive={false}>
             {sectorData.map((_entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -133,7 +131,7 @@ export default function SectorAllocationChart() {
               dataKey="percentage"
               position="right"
               formatter={(value) => `${value}%`}
-              style={{ fill: '#111827', fontSize: 12, fontWeight: 600 }}
+              style={{ fill: 'currentColor', fontSize: 12, fontWeight: 600 }}
             />
           </Bar>
         </BarChart>
