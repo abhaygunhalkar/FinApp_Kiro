@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.common import ApiResponse
 from app.schemas.transaction import TransactionCreate, TransactionResponse
+from app.services.dashboard_service import DashboardService
 from app.services.transaction_service import TransactionService
 
 router = APIRouter(prefix="/api/transactions", tags=["transactions"])
@@ -72,12 +73,12 @@ def get_sell_history(
                 buy_history[txn.ticker] = []
             buy_history[txn.ticker].append((txn.quantity, txn.price))
         elif txn.transaction_type == "sell":
-            # Try to compute cost basis from buy history
+            # Try to compute cost basis using FIFO matching of prior buys
             buys = buy_history.get(txn.ticker, [])
             if buys:
-                total_cost = sum(q * p for q, p in buys)
-                total_qty = sum(q for q, _ in buys)
-                avg_cost = total_cost / total_qty if total_qty > 0 else 0.0
+                avg_cost = DashboardService._consume_fifo_cost_basis(
+                    buys, txn.quantity
+                )
             elif txn.ticker in holding_avg_prices:
                 # Fallback: use current holding's average buy price
                 avg_cost = holding_avg_prices[txn.ticker]

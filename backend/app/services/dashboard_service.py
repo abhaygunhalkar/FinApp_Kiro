@@ -238,12 +238,35 @@ class DashboardService:
         ]
 
     @staticmethod
+    def _consume_fifo_cost_basis(
+        buys: list[tuple[float, float]], quantity: float
+    ) -> float:
+        """Consume buy lots in FIFO order and return the sell cost basis."""
+        remaining = quantity
+        total_cost = 0.0
+        consumed = 0.0
+
+        while remaining > 0 and buys:
+            lot_qty, lot_price = buys[0]
+            if lot_qty <= remaining:
+                total_cost += lot_qty * lot_price
+                consumed += lot_qty
+                remaining -= lot_qty
+                buys.pop(0)
+            else:
+                total_cost += remaining * lot_price
+                consumed += remaining
+                buys[0] = (lot_qty - remaining, lot_price)
+                remaining = 0.0
+
+        return total_cost / consumed if consumed > 0 else 0.0
+
+    @staticmethod
     def _calculate_realized_gain(db: Session) -> float:
         """Calculate total realized gain from all sell transactions.
 
         For each sell transaction, realized_gain = (sell_price - cost_basis) * qty.
-        Cost basis is computed from the weighted average of all buy transactions
-        for that ticker up to the sell date.
+        Cost basis is computed using FIFO matching of prior buy lots.
         """
         all_transactions = TransactionRepository.get_all_ordered(db)
         total_realized = 0.0
@@ -260,12 +283,11 @@ class DashboardService:
                     buy_history[txn.ticker] = []
                 buy_history[txn.ticker].append((txn.quantity, txn.price))
             elif txn.transaction_type == "sell":
-                # Compute weighted average cost basis from all buys for this ticker
                 buys = buy_history.get(txn.ticker, [])
                 if buys:
-                    total_cost = sum(q * p for q, p in buys)
-                    total_qty = sum(q for q, _ in buys)
-                    avg_cost = total_cost / total_qty if total_qty > 0 else 0.0
+                    avg_cost = DashboardService._consume_fifo_cost_basis(
+                        buys, txn.quantity
+                    )
                 else:
                     # Fallback: try to get from holding if it still exists
                     holding = HoldingsRepository.get_by_ticker(db, txn.ticker)

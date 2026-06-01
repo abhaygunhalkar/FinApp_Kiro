@@ -111,6 +111,62 @@ class TestGetSummary:
         # realized_gain = (150 - 100) * 5 = 250
         assert result.realized_gain == 250.0
 
+    def test_calculates_realized_gain_fifo_for_sequential_buy_sell_cycles(
+        self, db_session: Session
+    ) -> None:
+        holding = Holding(
+            ticker="WDCX",
+            quantity=150.0,
+            average_buy_price=98.25,
+            current_price=107.95,
+        )
+        db_session.add(holding)
+        db_session.commit()
+
+        first_buy = Transaction(
+            holding_id=holding.id,
+            ticker="WDCX",
+            transaction_type="buy",
+            quantity=200.0,
+            price=78.14,
+            fees=0.0,
+            transaction_date=date.today(),
+        )
+        first_sell = Transaction(
+            holding_id=holding.id,
+            ticker="WDCX",
+            transaction_type="sell",
+            quantity=200.0,
+            price=95.14,
+            fees=0.0,
+            transaction_date=date.today() + timedelta(days=1),
+        )
+        second_buy = Transaction(
+            holding_id=holding.id,
+            ticker="WDCX",
+            transaction_type="buy",
+            quantity=150.0,
+            price=98.25,
+            fees=0.0,
+            transaction_date=date.today() + timedelta(days=2),
+        )
+        second_sell = Transaction(
+            holding_id=holding.id,
+            ticker="WDCX",
+            transaction_type="sell",
+            quantity=150.0,
+            price=107.95,
+            fees=0.0,
+            transaction_date=date.today() + timedelta(days=3),
+        )
+        db_session.add_all([first_buy, first_sell, second_buy, second_sell])
+        db_session.commit()
+
+        result = DashboardService.get_summary(db_session)
+
+        expected_realized = (95.14 - 78.14) * 200.0 + (107.95 - 98.25) * 150.0
+        assert result.realized_gain == round(expected_realized, 2)
+
     def test_calculates_daily_change_with_previous_close(
         self, db_session: Session
     ) -> None:
