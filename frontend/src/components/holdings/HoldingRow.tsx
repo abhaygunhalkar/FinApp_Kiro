@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import TransactionHistory from './TransactionHistory';
+import { parseLocalDateString } from '../../utils/date';
 import type { Holding } from '../../types';
 
 interface HoldingRowProps {
@@ -30,7 +31,7 @@ export default function HoldingRow({ holding }: HoldingRowProps) {
     `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
 
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('en-US', {
+    parseLocalDateString(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

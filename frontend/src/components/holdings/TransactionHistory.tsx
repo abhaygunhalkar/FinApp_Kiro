@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTransactions, useCreateTransaction, useDeleteTransaction } from '../../hooks/useTransactions';
 import { LoadingSpinner, DeleteConfirmation } from '../shared';
+import { parseLocalDateString } from '../../utils/date';
 import type { Transaction, TransactionCreate } from '../../types';
 
 interface TransactionHistoryProps {
@@ -44,7 +45,7 @@ export default function TransactionHistory({ holdingId, ticker }: TransactionHis
     });
 
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('en-US', {
+    parseLocalDateString(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

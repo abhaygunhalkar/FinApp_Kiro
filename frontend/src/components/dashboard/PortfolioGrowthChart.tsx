@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { usePortfolioHistory } from '../../hooks/useDashboard';
+import { parseLocalDateString } from '../../utils/date';
 import { EmptyState } from '../shared';
 
 type Range = 7 | 30 | 90 | 365;
@@ -92,7 +93,7 @@ export default function PortfolioGrowthChart() {
             tick={{ fontSize: 12 }}
             className="text-gray-500 dark:text-gray-400"
             tickFormatter={(value: string) => {
-              const date = new Date(value);
+              const date = parseLocalDateString(value);
               return `${date.getMonth() + 1}/${date.getDate()}`;
             }}
           />
@@ -103,7 +104,7 @@ export default function PortfolioGrowthChart() {
           />
           <Tooltip
             formatter={(value) => [formatCurrency(Number(value)), 'Portfolio Value']}
-            labelFormatter={(label) => new Date(String(label)).toLocaleDateString()}
+            labelFormatter={(label) => parseLocalDateString(String(label)).toLocaleDateString()}
             contentStyle={{
               backgroundColor: 'var(--color-white, #fff)',
               border: '1px solid var(--color-gray-200, #e5e7eb)',
