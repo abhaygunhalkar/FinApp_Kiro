@@ -162,10 +162,10 @@ export default function OptionsTradesPage() {
       {/* Modal form component will be shown when modalOpen is true */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/50 dark:bg-black/70" onClick={() => setModalOpen(false)} />
+          <div className="absolute inset-0 bg-black/50 dark:bg-black/70" onClick={() => { setModalOpen(false); setModalEditing(null); }} />
           <div className="relative z-10 w-full max-w-2xl mx-4 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
             {/* lazy load: render local form component */}
-            <OptionsLogForm editing={modalEditing ?? undefined} onClose={() => setModalOpen(false)} />
+            <OptionsLogForm editing={modalEditing ?? undefined} onClose={() => { setModalOpen(false); setModalEditing(null); }} />
           </div>
         </div>
       )}

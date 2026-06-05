@@ -43,9 +43,12 @@ export default function OptionsLogForm({ editing, onClose }: { editing?: any; on
         await create.mutateAsync(payload);
       }
       setSuccessMsg(editing ? 'Trade updated' : 'Trade logged');
-      setTimeout(() => onClose(), 600);
-    } catch (err) {
-      setErrorMsg('Save failed');
+      // close modal after brief success message display
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Save failed. Please try again.');
     }
   }
 
