@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useOptions, useCreateOption, useUpdateOption, useDeleteOption, useOptionsSummary } from '../hooks';
+import { parseLocalDateString } from '../utils/date';
 import OptionsLogForm from '../components/options/OptionsLogForm';
 
 const TYPE_COLORS: Record<string, string> = {
@@ -79,7 +80,7 @@ export default function OptionsTradesPage() {
     if (!(payload.strike_price > 0)) return setErrorMsg('Strike price must be greater than 0');
     if (!(payload.premium > 0)) return setErrorMsg('Premium must be greater than 0');
     if (!(payload.contracts >= 1)) return setErrorMsg('Contracts must be at least 1');
-    if (new Date(payload.expiry_date) <= new Date(payload.open_date)) return setErrorMsg('Expiry date must be after open date');
+    if (parseLocalDateString(payload.expiry_date) <= parseLocalDateString(payload.open_date)) return setErrorMsg('Expiry date must be after open date');
     if (payload.status === 'closed' && !(payload.close_price > 0)) return setErrorMsg('Close price is required when status is Closed');
 
     try {
@@ -134,7 +135,8 @@ export default function OptionsTradesPage() {
           </thead>
           <tbody>
             {filtered.map((t: any) => {
-              const expiringSoon = (new Date(t.expiry_date)).getTime() - Date.now() <= 7 * 24 * 3600 * 1000;
+              const expiryDate = parseLocalDateString(t.expiry_date);
+              const expiringSoon = expiryDate.getTime() - Date.now() <= 7 * 24 * 3600 * 1000;
               return (
                 <tr key={t.id} className="border-t border-gray-100 dark:border-gray-700">
                   <td className="px-3 py-3 font-medium">{t.ticker}</td>
@@ -142,7 +144,7 @@ export default function OptionsTradesPage() {
                   <td>{t.strike_price}</td>
                   <td>{t.premium}</td>
                   <td>{t.contracts}</td>
-                  <td className={`${expiringSoon ? 'text-amber-600 font-semibold' : ''}`}>{new Date(t.expiry_date).toISOString().slice(0,10)}</td>
+                  <td className={`${expiringSoon ? 'text-amber-600 font-semibold' : ''}`}>{expiryDate.toISOString().slice(0,10)}</td>
                   <td><span className={`px-2 py-1 rounded text-xs ${STATUS_COLORS[t.status] || 'bg-gray-100'}`}>{t.status}</span></td>
                   <td className="text-right font-medium">
                     {t.pnl == null ? '—' : (t.pnl >= 0 ? <span className="text-emerald-600">${t.pnl}</span> : <span className="text-red-600">${t.pnl}</span>)}

@@ -10,6 +10,7 @@ import {
   Cell,
 } from 'recharts';
 import { useMonthlyRealizedGain } from '../../hooks/useDashboard';
+import { parseLocalDateString } from '../../utils/date';
 import { EmptyState } from '../shared';
 
 const MONTH_NAMES = [
@@ -40,7 +41,7 @@ export default function MonthlyGainLossChart() {
     }
 
     for (const sell of sells) {
-      const transactionDate = new Date(sell.transaction_date);
+      const transactionDate = parseLocalDateString(sell.transaction_date);
       if (transactionDate.getFullYear() !== currentYear) {
         continue;
       }
