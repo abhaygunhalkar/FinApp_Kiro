@@ -9,4 +9,5 @@ export {
   deleteWatchlistItem,
 } from './watchlist';
 export { getSummary, getActivity, getHistory, getSellHistory } from './dashboard';
+export { getOptions, getOption, createOption, updateOption, deleteOption, getOptionsSummary } from './options';
 export { getQuote, getHistory as getMarketHistory } from './market';

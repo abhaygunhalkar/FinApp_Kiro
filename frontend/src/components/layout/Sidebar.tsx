@@ -10,6 +10,7 @@ const navItems = [
   { to: '/trades', label: 'Trade History', icon: TradesIcon },
   { to: '/earnings', label: 'Earnings Calendar', icon: EarningsIcon },
   { to: '/options-strategy', label: 'Options Strategy', icon: OptionsStrategyIcon },
+  { to: '/options', label: 'Options Trades', icon: OptionsStrategyIcon },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 

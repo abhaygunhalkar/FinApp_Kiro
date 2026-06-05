@@ -9,4 +9,5 @@ export {
   useDeleteWatchlistItem,
 } from './useWatchlist';
 export { useDashboardSummary, useActivity, usePortfolioHistory } from './useDashboard';
+export { useOptions, useOptionsSummary, useCreateOption, useUpdateOption, useDeleteOption } from './useOptions';
 export { useMarketQuote, useMarketHistory } from './useMarket';
