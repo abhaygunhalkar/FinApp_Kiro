@@ -10,8 +10,8 @@ class HoldingsRepository:
 
     @staticmethod
     def get_all(db: Session) -> list[Holding]:
-        """Retrieve all holdings."""
-        return list(db.query(Holding).all())
+        """Retrieve all active holdings."""
+        return list(db.query(Holding).filter(Holding.quantity > 0).all())
 
     @staticmethod
     def get_by_id(db: Session, holding_id: int) -> Holding | None:
@@ -20,31 +20,47 @@ class HoldingsRepository:
 
     @staticmethod
     def get_by_ticker(db: Session, ticker: str) -> Holding | None:
-        """Retrieve a holding by its ticker symbol."""
-        return db.query(Holding).filter(Holding.ticker == ticker).first()
+        """Retrieve an active holding by its ticker symbol."""
+        return (
+            db.query(Holding)
+            .filter(Holding.ticker == ticker, Holding.quantity > 0)
+            .first()
+        )
 
     @staticmethod
     def get_by_ticker_and_type(
         db: Session, ticker: str, holding_type: str
     ) -> Holding | None:
-        """Retrieve a holding by ticker and type."""
+        """Retrieve an active holding by ticker and type."""
         return (
             db.query(Holding)
-            .filter(Holding.ticker == ticker, Holding.holding_type == holding_type)
+            .filter(
+                Holding.ticker == ticker,
+                Holding.holding_type == holding_type,
+                Holding.quantity > 0,
+            )
             .first()
         )
 
     @staticmethod
     def get_all_by_type(db: Session, holding_type: str) -> list[Holding]:
-        """Retrieve all holdings by type."""
-        return list(db.query(Holding).filter(Holding.holding_type == holding_type).all())
+        """Retrieve all active holdings by type."""
+        return list(
+            db.query(Holding)
+            .filter(Holding.holding_type == holding_type, Holding.quantity > 0)
+            .all()
+        )
 
     @staticmethod
     def get_by_id_and_type(db: Session, holding_id: int, holding_type: str) -> Holding | None:
-        """Retrieve a holding by ID and type."""
+        """Retrieve an active holding by ID and type."""
         return (
             db.query(Holding)
-            .filter(Holding.id == holding_id, Holding.holding_type == holding_type)
+            .filter(
+                Holding.id == holding_id,
+                Holding.holding_type == holding_type,
+                Holding.quantity > 0,
+            )
             .first()
         )
 

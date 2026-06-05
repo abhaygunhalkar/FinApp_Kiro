@@ -279,6 +279,47 @@ class TestCreateSellTransaction:
         )
         assert remaining is None
 
+    def test_sell_removes_holding_when_quantity_is_near_zero_due_to_float_drift(
+        self, db_session: Session
+    ) -> None:
+        cash = CashBalance(balance=0.0)
+        db_session.add(cash)
+
+        holding = Holding(
+            ticker="AAPL",
+            quantity=0.9,
+            average_buy_price=100.0,
+            current_price=150.0,
+        )
+        db_session.add(holding)
+        db_session.commit()
+        holding_id = holding.id
+
+        first_sell = TransactionCreate(
+            ticker="AAPL",
+            transaction_type="sell",
+            quantity=0.8,
+            price=150.0,
+            fees=0.0,
+            transaction_date=date(2024, 3, 1),
+        )
+        second_sell = TransactionCreate(
+            ticker="AAPL",
+            transaction_type="sell",
+            quantity=0.1,
+            price=150.0,
+            fees=0.0,
+            transaction_date=date(2024, 3, 2),
+        )
+
+        TransactionService.create_transaction(db_session, first_sell)
+        TransactionService.create_transaction(db_session, second_sell)
+
+        remaining = (
+            db_session.query(Holding).filter(Holding.id == holding_id).first()
+        )
+        assert remaining is None
+
     def test_sell_rejects_if_no_holding_exists(self, db_session: Session) -> None:
         from fastapi import HTTPException
 

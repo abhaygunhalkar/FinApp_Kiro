@@ -136,6 +136,12 @@ class TransactionService:
             HoldingsRepository.update(db, holding)
 
     @staticmethod
+    def _normalize_quantity(quantity: float) -> float:
+        """Normalize quantities to avoid tiny floating-point residues."""
+        normalized = round(quantity, 8)
+        return 0.0 if abs(normalized) < 1e-9 else normalized
+
+    @staticmethod
     def _process_buy(db: Session, data: TransactionCreate) -> TransactionResponse:
         """Process a buy transaction."""
         holding = HoldingsRepository.get_by_ticker(db, data.ticker)
@@ -174,7 +180,7 @@ class TransactionService:
         )
         transaction = TransactionRepository.create(db, transaction)
 
-        # Decrease cash balance by (price × quantity + fees)
+        # Decrease cash balance by (price × quantity - fees)
         cash_balance = CashBalanceRepository.get_balance(db)
         new_balance = cash_balance.balance - (data.price * data.quantity + data.fees)
         CashBalanceRepository.update_balance(db, new_balance)
@@ -202,10 +208,12 @@ class TransactionService:
                 ),
             )
 
-        # Update holding quantity
-        new_quantity = holding.quantity - data.quantity
+        # Update holding quantity and normalize any floating-point residue
+        new_quantity = TransactionService._normalize_quantity(
+            holding.quantity - data.quantity
+        )
 
-        if new_quantity == 0:
+        if new_quantity == 0.0:
             # Create transaction first, then delete holding
             transaction = Transaction(
                 holding_id=holding.id,
