@@ -17,6 +17,20 @@ class TestGetAllHoldings:
         result = HoldingsService.get_all_holdings(db_session)
         assert result == []
 
+    def test_filters_out_zero_quantity_holdings(self, db_session: Session) -> None:
+        holding = Holding(
+            ticker="AAPL",
+            company_name="Apple Inc.",
+            quantity=1e-8,
+            average_buy_price=150.0,
+            current_price=175.0,
+        )
+        db_session.add(holding)
+        db_session.commit()
+
+        result = HoldingsService.get_all_holdings(db_session)
+        assert result == []
+
     def test_returns_holdings_with_calculated_fields(self, db_session: Session) -> None:
         holding = Holding(
             ticker="AAPL",

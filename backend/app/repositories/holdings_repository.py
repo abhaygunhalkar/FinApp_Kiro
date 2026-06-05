@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.models.holding import Holding
 
+ACTIVE_QUANTITY_THRESHOLD = 1e-8
+
 
 class HoldingsRepository:
     """Data access layer for holdings."""
@@ -11,7 +13,11 @@ class HoldingsRepository:
     @staticmethod
     def get_all(db: Session) -> list[Holding]:
         """Retrieve all active holdings."""
-        return list(db.query(Holding).filter(Holding.quantity > 0).all())
+        return list(
+            db.query(Holding)
+            .filter(Holding.quantity > ACTIVE_QUANTITY_THRESHOLD)
+            .all()
+        )
 
     @staticmethod
     def get_by_id(db: Session, holding_id: int) -> Holding | None:
@@ -23,7 +29,10 @@ class HoldingsRepository:
         """Retrieve an active holding by its ticker symbol."""
         return (
             db.query(Holding)
-            .filter(Holding.ticker == ticker, Holding.quantity > 0)
+            .filter(
+                Holding.ticker == ticker,
+                Holding.quantity > ACTIVE_QUANTITY_THRESHOLD,
+            )
             .first()
         )
 
@@ -37,7 +46,7 @@ class HoldingsRepository:
             .filter(
                 Holding.ticker == ticker,
                 Holding.holding_type == holding_type,
-                Holding.quantity > 0,
+                Holding.quantity > ACTIVE_QUANTITY_THRESHOLD,
             )
             .first()
         )
@@ -47,9 +56,25 @@ class HoldingsRepository:
         """Retrieve all active holdings by type."""
         return list(
             db.query(Holding)
-            .filter(Holding.holding_type == holding_type, Holding.quantity > 0)
+            .filter(
+                Holding.holding_type == holding_type,
+                Holding.quantity > ACTIVE_QUANTITY_THRESHOLD,
+            )
             .all()
         )
+
+    @staticmethod
+    def delete_zero_quantity_holdings(db: Session) -> None:
+        """Remove any holdings that are effectively zero quantity."""
+        try:
+            query = db.query(Holding).filter(
+                Holding.quantity <= ACTIVE_QUANTITY_THRESHOLD
+            )
+            query.delete(synchronize_session=False)
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
 
     @staticmethod
     def get_by_id_and_type(db: Session, holding_id: int, holding_type: str) -> Holding | None:
@@ -59,7 +84,7 @@ class HoldingsRepository:
             .filter(
                 Holding.id == holding_id,
                 Holding.holding_type == holding_type,
-                Holding.quantity > 0,
+                Holding.quantity > ACTIVE_QUANTITY_THRESHOLD,
             )
             .first()
         )

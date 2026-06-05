@@ -46,6 +46,8 @@ class TransactionService:
         - Increase cash balance by (price × quantity - fees).
         - If quantity becomes 0, remove the holding.
         """
+        HoldingsRepository.delete_zero_quantity_holdings(db)
+
         if data.transaction_type == "buy":
             return TransactionService._process_buy(db, data)
         else:
@@ -139,7 +141,7 @@ class TransactionService:
     def _normalize_quantity(quantity: float) -> float:
         """Normalize quantities to avoid tiny floating-point residues."""
         normalized = round(quantity, 8)
-        return 0.0 if abs(normalized) < 1e-9 else normalized
+        return 0.0 if abs(normalized) <= 1e-8 else normalized
 
     @staticmethod
     def _process_buy(db: Session, data: TransactionCreate) -> TransactionResponse:

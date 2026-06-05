@@ -130,6 +130,8 @@ class HoldingsService:
 
         If holding_type is provided, only holdings of that type are returned.
         """
+        HoldingsRepository.delete_zero_quantity_holdings(db)
+
         holdings = (
             HoldingsRepository.get_all(db)
             if holding_type is None
@@ -152,6 +154,8 @@ class HoldingsService:
 
         Raises HTTPException 404 if the holding does not exist.
         """
+        HoldingsRepository.delete_zero_quantity_holdings(db)
+
         holding = (
             HoldingsRepository.get_by_id(db, holding_id)
             if holding_type is None
@@ -182,6 +186,9 @@ class HoldingsService:
         Raises HTTPException 400 if ticker already exists.
         """
         from app.services.market_data_service import MarketDataService
+
+        # Remove any stale zero-quantity holdings before duplicate checks
+        HoldingsRepository.delete_zero_quantity_holdings(db)
 
         # Check for duplicate ticker in this holding type
         existing = HoldingsRepository.get_by_ticker_and_type(
