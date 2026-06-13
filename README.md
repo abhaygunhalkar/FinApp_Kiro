@@ -1,6 +1,14 @@
 # FinApp_Kiro
 Finance Portfolio Management
 
+# Setup
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+
+brew install python
+
+brew install node
+
 # Running
 
 Frontend:
