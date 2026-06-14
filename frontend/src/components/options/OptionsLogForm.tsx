@@ -80,9 +80,9 @@ export default function OptionsLogForm({ editing, onClose }: { editing?: any; on
             <option value="closed">Closed — bought back early</option>
             <option value="expired_worthless">Expired worthless — full premium kept</option>
             <option value="assigned">Assigned — stock delivered/called away</option>
-            <option value="assigned">Expired worthless — full premium lost</option>
-            <option value="assigned">Closed — sold to close</option>
-            <option value="assigned">Exercised — bought shares at strike</option>
+            <option value="expired_premium_lost">Expired worthless — full premium lost</option>
+            <option value="sold_to_close">Closed — sold to close</option>
+            <option value="bought_at_strike">Exercised — bought shares at strike</option>
      
           
             
@@ -99,6 +99,12 @@ export default function OptionsLogForm({ editing, onClose }: { editing?: any; on
           )}
           {status === 'assigned' && (
             <div className="col-span-2 p-3 rounded bg-amber-50 text-amber-700">Premium will be recorded as gain. Remember to update cost basis in holdings page for the assigned shares.</div>
+          )}
+          {status === 'expired_premium_lost' && (
+            <div className="col-span-2 p-3 rounded bg-amber-50 text-amber-700">Expired worthless — full premium lost</div>
+          )}
+          {status === 'sold_to_close' && (
+            <div className="col-span-2 p-3 rounded bg-amber-50 text-amber-700">Closed — sold to close</div>
           )}
           {status === 'open' && <div className="col-span-2" />}
           {status !== 'closed' && <input name="close_price" type="hidden" />}
