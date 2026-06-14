@@ -38,23 +38,23 @@ function OptionsStats() {
 
   return (
     <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div className="rounded-xl p-4 bg-emerald-50 border border-emerald-100">
-        <p className="text-sm font-medium text-emerald-700">Premium collected</p>
-        <p className="mt-2 text-xl font-bold text-emerald-800">{formatCurrency(collected)}</p>
-      </div>
-      <div className="rounded-xl p-4 bg-red-50 border border-red-100">
-        <p className="text-sm font-medium text-red-700">Premium paid</p>
-        <p className="mt-2 text-xl font-bold text-red-800">-{formatCurrency(paid)}</p>
-      </div>
-      <div className={`rounded-xl p-4 ${net >= 0 ? 'bg-emerald-50 border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
-        <p className="text-sm font-medium text-slate-500">Net premium</p>
-        <p className={`mt-2 text-xl font-bold ${net >= 0 ? 'text-emerald-800' : 'text-red-800'}`}>{formatCurrency(net)}</p>
-      </div>
-      <div className="rounded-xl p-4 bg-slate-50 border border-slate-100">
-        <p className="text-sm font-medium text-slate-600">Realized P&L</p>
-        <p className="mt-2 text-xl font-bold text-slate-800">{formatCurrency(realized)}</p>
-      </div>
-    </div>
+  <div className="rounded-xl p-4 bg-green-100 border-2 border-green-300">
+    <p className="text-sm font-medium text-green-800">Premium collected</p>
+    <p className="mt-2 text-xl font-bold text-green-900">{formatCurrency(collected)}</p>
+  </div>
+  <div className="rounded-xl p-4 bg-red-100 border-2 border-red-300">
+    <p className="text-sm font-medium text-red-800">Premium paid</p>
+    <p className="mt-2 text-xl font-bold text-red-900">-{formatCurrency(paid)}</p>
+  </div>
+  <div className={`rounded-xl p-4 ${net >= 0 ? 'bg-green-100 border-2 border-green-300' : 'bg-red-100 border-2 border-red-300'}`}>
+    <p className="text-sm font-medium text-slate-600">Net premium</p>
+    <p className={`mt-2 text-xl font-bold ${net >= 0 ? 'text-green-900' : 'text-red-900'}`}>{formatCurrency(net)}</p>
+  </div>
+  <div className="rounded-xl p-4 bg-slate-200 border-2 border-slate-300">
+    <p className="text-sm font-medium text-slate-600">Realized P&L</p>
+    <p className="mt-2 text-xl font-bold text-slate-900">{formatCurrency(realized)}</p>
+  </div>
+</div>
   );
 }
 
