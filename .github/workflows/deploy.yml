@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      deploy_backend:
+        description: 'Deploy backend'
+        type: boolean
+        default: true
+      deploy_frontend:
+        description: 'Deploy frontend'
+        type: boolean
+        default: true
 
 jobs:
   deploy-backend:
@@ -18,6 +28,10 @@ jobs:
       - name: Check for backend changes
         id: backend-changes
         run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=${{ github.event.inputs.deploy_backend }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           BEFORE="${{ github.event.before }}"
           if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             BEFORE=$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)
@@ -54,6 +68,10 @@ jobs:
       - name: Check for frontend changes
         id: frontend-changes
         run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=${{ github.event.inputs.deploy_frontend }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           BEFORE="${{ github.event.before }}"
           if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             BEFORE=$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)
