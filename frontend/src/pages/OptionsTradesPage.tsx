@@ -32,7 +32,7 @@ export default function OptionsTradesPage() {
   const update = useUpdateOption();
   const remove = useDeleteOption();
 
-  const [filter, setFilter] = useState<'all' | 'open' | 'closed' | 'expired_worthless' | 'assigned'>('all');
+  const [filter, setFilter] = useState<'all' | 'open' | 'closed' | 'expired_worthless' | 'assigned'>('open');
   const [editing, setEditing] = useState<any | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [status, setStatus] = useState<string>('open');
