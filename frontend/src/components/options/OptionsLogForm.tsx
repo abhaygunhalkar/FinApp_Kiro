@@ -98,34 +98,65 @@ export default function OptionsLogForm({ editing, onClose }: { editing?: any; on
         {errorMsg && <div className="mb-3 text-sm text-red-700">{errorMsg}</div>}
         {successMsg && <div className="mb-3 text-sm text-emerald-700">{successMsg}</div>}
 
-        <div className="grid grid-cols-2 gap-3">
-          <input name="ticker" defaultValue={editing?.ticker ?? ''} placeholder="Ticker" className="p-2 border rounded" required />
-          <select name="trade_type" value={tradeType} onChange={handleTradeTypeChange} className="p-2 border rounded">
-            <option value="sell_put">sell_put</option>
-            <option value="sell_call">sell_call</option>
-            <option value="buy_call">buy_call</option>
-            <option value="buy_put">buy_put</option>
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="ticker" className="text-xs font-medium text-gray-600">Ticker</label>
+            <input id="ticker" name="ticker" defaultValue={editing?.ticker ?? ''} placeholder="e.g. AAPL" className="p-2 border rounded" required />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="trade_type" className="text-xs font-medium text-gray-600">Trade Type</label>
+            <select id="trade_type" name="trade_type" value={tradeType} onChange={handleTradeTypeChange} className="p-2 border rounded">
+              <option value="sell_put">Sell Put (Cash-Secured Put)</option>
+              <option value="sell_call">Sell Call (Covered Call)</option>
+              <option value="buy_call">Buy Call</option>
+              <option value="buy_put">Buy Put</option>
+            </select>
+          </div>
 
-          <input name="strike_price" type="number" step="0.01" defaultValue={editing?.strike_price ?? ''} placeholder="Strike" className="p-2 border rounded" required />
-          <input name="premium" type="number" step="0.01" defaultValue={editing?.premium ?? ''} placeholder="Premium" className="p-2 border rounded" required />
+          <div className="flex flex-col gap-1">
+            <label htmlFor="strike_price" className="text-xs font-medium text-gray-600">Strike Price</label>
+            <input id="strike_price" name="strike_price" type="number" step="0.01" defaultValue={editing?.strike_price ?? ''} placeholder="0.00" className="p-2 border rounded" required />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="premium" className="text-xs font-medium text-gray-600">Premium <span className="font-normal text-gray-400">(per share)</span></label>
+            <input id="premium" name="premium" type="number" step="0.01" defaultValue={editing?.premium ?? ''} placeholder="0.00" className="p-2 border rounded" required />
+          </div>
 
-          <input name="contracts" type="number" defaultValue={editing?.contracts ?? 1} placeholder="Contracts" className="p-2 border rounded" required />
-          <input name="open_date" type="date" defaultValue={editing?.open_date ?? ''} className="p-2 border rounded" required />
+          <div className="flex flex-col gap-1">
+            <label htmlFor="contracts" className="text-xs font-medium text-gray-600">Contracts</label>
+            <input id="contracts" name="contracts" type="number" defaultValue={editing?.contracts ?? 1} className="p-2 border rounded" required />
+          </div>
+          <div />
 
-          <input name="expiry_date" type="date" defaultValue={editing?.expiry_date ?? ''} className="p-2 border rounded" required />
-          <select name="status" value={status} onChange={(e) => setStatus(e.target.value)} className="p-2 border rounded">
-            {statusOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="open_date" className="text-xs font-medium text-gray-600">
+              Open Date <span className="font-normal text-gray-400">(when you entered the trade)</span>
+            </label>
+            <input id="open_date" name="open_date" type="date" defaultValue={editing?.open_date ?? ''} className="p-2 border rounded" required />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="expiry_date" className="text-xs font-medium text-gray-600">
+              Expiration Date <span className="font-normal text-gray-400">(contract expiry)</span>
+            </label>
+            <input id="expiry_date" name="expiry_date" type="date" defaultValue={editing?.expiry_date ?? ''} className="p-2 border rounded" required />
+          </div>
+
+          <div className="col-span-2 flex flex-col gap-1">
+            <label htmlFor="status" className="text-xs font-medium text-gray-600">Status</label>
+            <select id="status" name="status" value={status} onChange={(e) => setStatus(e.target.value)} className="p-2 border rounded">
+              {statusOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {status === 'closed' && (
-            <div className="col-span-2">
-              <input name="close_price" type="number" step="0.01" defaultValue={editing?.close_price ?? ''} placeholder="Close Price" className="p-2 border rounded w-full" required />
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="col-span-2 flex flex-col gap-1">
+              <label htmlFor="close_price" className="text-xs font-medium text-gray-600">Close Price</label>
+              <input id="close_price" name="close_price" type="number" step="0.01" defaultValue={editing?.close_price ?? ''} placeholder="0.00" className="p-2 border rounded w-full" required />
+              <p className="text-xs text-gray-500">
                 {tradeType.startsWith('sell_')
                   ? 'P&L = (premium − close price) × contracts × 100'
                   : 'P&L = (close price − premium) × contracts × 100'}
@@ -142,10 +173,12 @@ export default function OptionsLogForm({ editing, onClose }: { editing?: any; on
           {status === 'assigned' && (
             <div className="col-span-2 p-3 rounded bg-amber-50 text-amber-700">Premium will be recorded as gain. Remember to update cost basis in holdings page for the assigned shares.</div>
           )}
-          {status === 'open' && <div className="col-span-2" />}
           {status !== 'closed' && <input name="close_price" type="hidden" />}
 
-          <textarea name="notes" defaultValue={editing?.notes ?? ''} placeholder="Notes" className="col-span-2 p-2 border rounded" />
+          <div className="col-span-2 flex flex-col gap-1">
+            <label htmlFor="notes" className="text-xs font-medium text-gray-600">Notes <span className="font-normal text-gray-400">(optional)</span></label>
+            <textarea id="notes" name="notes" defaultValue={editing?.notes ?? ''} placeholder="Any additional context..." className="p-2 border rounded" />
+          </div>
         </div>
 
         <div className="mt-3 flex gap-2 justify-end">
