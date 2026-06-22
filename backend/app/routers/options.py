@@ -16,6 +16,12 @@ def list_options(db: Session = Depends(get_db)) -> ApiResponse[list[OptionsTrade
     return ApiResponse(success=True, data=trades, error=None)
 
 
+@router.get("/summary", response_model=ApiResponse[OptionsSummary])
+def options_summary(db: Session = Depends(get_db)) -> ApiResponse[OptionsSummary]:
+    summary = OptionsService.get_summary(db)
+    return ApiResponse(success=True, data=summary, error=None)
+
+
 @router.get("/{id}", response_model=ApiResponse[OptionsTradeResponse])
 def get_option(id: int, db: Session = Depends(get_db)) -> ApiResponse[OptionsTradeResponse]:
     trade = OptionsService.get_trade(db, id)
@@ -42,9 +48,3 @@ def update_option(id: int, payload: OptionsTradeCreate, db: Session = Depends(ge
 def delete_option(id: int, db: Session = Depends(get_db)) -> ApiResponse[None]:
     OptionsService.delete_trade(db, id)
     return ApiResponse(success=True, data=None, error=None)
-
-
-@router.get("/summary", response_model=ApiResponse[OptionsSummary])
-def options_summary(db: Session = Depends(get_db)) -> ApiResponse[OptionsSummary]:
-    summary = OptionsService.get_summary(db)
-    return ApiResponse(success=True, data=summary, error=None)
