@@ -13,6 +13,7 @@ import EarningsCalendar from './pages/EarningsCalendar';
 import Settings from './pages/Settings';
 import OptionsStrategy from './pages/OptionsStrategy';
 import OptionsTradesPage from './pages/OptionsTradesPage';
+import Utilities from './pages/Utilities';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: '/options-strategy', element: <OptionsStrategy /> },
       { path: '/options', element: <OptionsTradesPage /> },
       { path: '/settings', element: <Settings /> },
+      { path: '/utilities', element: <Utilities /> },
     ],
   },
 ]);

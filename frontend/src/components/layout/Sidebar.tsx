@@ -11,6 +11,7 @@ const navItems = [
   { to: '/earnings', label: 'Earnings Calendar', icon: EarningsIcon },
   { to: '/options-strategy', label: 'Options Strategy', icon: OptionsStrategyIcon },
   { to: '/options', label: 'Options Trades', icon: OptionsStrategyIcon },
+  { to: '/utilities', label: 'Utilities', icon: UtilitiesIcon },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 
@@ -205,6 +206,19 @@ function EarningsIcon() {
     >
       <path d="M6 2a1 1 0 00-1 1v2H3a1 1 0 00-1 1v11a1 1 0 001 1h14a1 1 0 001-1V6a1 1 0 00-1-1h-2V3a1 1 0 00-1-1H6zm1 2V3h6v1H7zm-3 3h14v9H4V7z" />
       <path d="M7 11h6v2H7v-2zm0 4h4v2H7v-2z" />
+    </svg>
+  );
+}
+
+function UtilitiesIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
     </svg>
   );
 }
