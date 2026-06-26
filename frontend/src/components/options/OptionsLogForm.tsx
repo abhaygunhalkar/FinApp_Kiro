@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCreateOption, useUpdateOption } from '../../hooks';
+import apiClient from '../../api/client';
 
 function getStatusOptions(tradeType: string): { value: string; label: string }[] {
   const isCredit = tradeType.startsWith('sell_');
@@ -41,14 +42,26 @@ export default function OptionsLogForm({
   const update = useUpdateOption();
   const [tradeType, setTradeType] = useState<string>(editing?.trade_type ?? 'sell_put');
   const [status, setStatus] = useState<string>(editing?.status ?? 'open');
+  const [broker, setBroker] = useState<string>(editing?.broker ?? '');
+  const [brokers, setBrokers] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const statusOptions = getStatusOptions(tradeType);
 
   useEffect(() => {
+    apiClient
+      .get('/api/market/brokers')
+      .then((res) => {
+        if (res.data.success) setBrokers(res.data.data);
+      })
+      .catch(() => setBrokers(['Robinhood', 'Schwab', 'Merrill']));
+  }, []);
+
+  useEffect(() => {
     setTradeType(editing?.trade_type ?? 'sell_put');
     setStatus(editing?.status ?? 'open');
+    setBroker(editing?.broker ?? '');
   }, [editing]);
 
   function handleTradeTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -72,6 +85,7 @@ export default function OptionsLogForm({
       status: fd.get('status'),
       close_price: fd.get('close_price') ? Number(fd.get('close_price')) : null,
       notes: fd.get('notes')?.toString() || null,
+      broker: fd.get('broker')?.toString() || null,
     };
 
     setErrorMsg(null);
@@ -158,8 +172,8 @@ export default function OptionsLogForm({
           </div>
         )}
 
-        {/* row 1: ticker + trade type */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* row 1: ticker + brokerage + trade type */}
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label htmlFor="ticker" className={labelClass}>
               Ticker
@@ -172,6 +186,25 @@ export default function OptionsLogForm({
               className={`${inputClass} uppercase`}
               required
             />
+          </div>
+          <div>
+            <label htmlFor="broker" className={labelClass}>
+              Brokerage
+            </label>
+            <select
+              id="broker"
+              name="broker"
+              value={broker}
+              onChange={(e) => setBroker(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Select broker…</option>
+              {brokers.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label htmlFor="trade_type" className={labelClass}>

@@ -16,6 +16,7 @@ class OptionsTradeCreate(BaseModel):
     status: Literal["open", "closed", "expired_worthless", "assigned"]
     close_price: float | None = None
     notes: str | None = None
+    broker: str | None = None
 
 
 class OptionsTradeResponse(BaseModel):
@@ -30,6 +31,7 @@ class OptionsTradeResponse(BaseModel):
     status: str
     close_price: float | None
     notes: str | None
+    broker: str | None = None
     created_at: datetime
     updated_at: datetime
     pnl: float | None = None

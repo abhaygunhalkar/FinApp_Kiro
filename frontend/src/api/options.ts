@@ -12,6 +12,7 @@ export interface OptionPayload {
   status: 'open' | 'closed' | 'expired_worthless' | 'assigned';
   close_price?: number | null;
   notes?: string | null;
+  broker?: string | null;
 }
 
 export async function getOptions() {
@@ -53,6 +54,7 @@ export interface OptionQuote {
 }
 
 export async function getOpenTradeQuotes() {
-  const { data } = await apiClient.get<ApiResponse<Record<string, OptionQuote>>>('/api/options/quotes');
+  const { data } =
+    await apiClient.get<ApiResponse<Record<string, OptionQuote>>>('/api/options/quotes');
   return unwrapResponse(data);
 }

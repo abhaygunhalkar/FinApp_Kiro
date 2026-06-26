@@ -400,7 +400,10 @@ export default function OptionsTradesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-finance-gradient text-slate-200 text-left border-b border-blue-900/40">
-                <SortTh col="ticker" label="Ticker" className="pl-5" />
+                <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider pl-5 whitespace-nowrap">
+                  Brokerage
+                </th>
+                <SortTh col="ticker" label="Ticker" />
                 <SortTh col="type" label="Strategy" />
                 <SortTh col="strike" label="Strike" className="text-right" />
                 <SortTh col="premium" label="Net Premium" className="text-right" />
@@ -416,7 +419,7 @@ export default function OptionsTradesPage() {
               {sortedRows.length === 0 && (
                 <tr>
                   <td
-                    colSpan={filter === 'all' ? 10 : 9}
+                    colSpan={filter === 'all' ? 11 : 10}
                     className="px-5 py-12 text-center text-slate-400 text-sm"
                   >
                     No {filter === 'all' ? '' : filter.replace('_', ' ')} trades found
@@ -448,8 +451,13 @@ export default function OptionsTradesPage() {
                       key={t.id}
                       className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                     >
+                      {/* Brokerage */}
+                      <td className="pl-5 pr-4 py-2 text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">
+                        {t.broker ?? <span className="text-slate-300 dark:text-slate-600">—</span>}
+                      </td>
+
                       {/* Ticker */}
-                      <td className="pl-5 pr-4 py-2">
+                      <td className="px-4 py-2">
                         <span className="font-bold text-slate-900 dark:text-white tracking-wide">
                           {t.ticker}
                         </span>
