@@ -53,6 +53,16 @@ export interface OptionQuote {
   unrealized_pnl: number | null;
 }
 
+export interface MonthlyPnlEntry {
+  transaction_date: string;
+  realized_gain: number;
+}
+
+export async function getOptionsMonthlyPnl(): Promise<MonthlyPnlEntry[]> {
+  const { data } = await apiClient.get<ApiResponse<MonthlyPnlEntry[]>>('/api/options/monthly-pnl');
+  return unwrapResponse(data);
+}
+
 export async function getOpenTradeQuotes() {
   const { data } =
     await apiClient.get<ApiResponse<Record<string, OptionQuote>>>('/api/options/quotes');

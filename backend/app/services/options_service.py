@@ -49,6 +49,20 @@ class OptionsService:
         return result
 
     @staticmethod
+    def get_monthly_pnl(db: Session) -> list[dict]:
+        """Return realized P&L per closed/expired/assigned trade, keyed by expiry_date."""
+        trades = OptionsRepository.get_all(db)
+        result = []
+        for trade in trades:
+            pnl = OptionsService._calculate_pnl_for_trade(trade)
+            if pnl is not None:
+                result.append({
+                    "transaction_date": trade.expiry_date.isoformat(),
+                    "realized_gain": pnl,
+                })
+        return result
+
+    @staticmethod
     def get_trade(db: Session, id: int) -> OptionsTradeResponse | None:
         t = OptionsRepository.get_by_id(db, id)
         if not t:

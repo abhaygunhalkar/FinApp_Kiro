@@ -29,6 +29,13 @@ def get_open_trade_quotes(db: Session = Depends(get_db)) -> ApiResponse[dict[int
     return ApiResponse(success=True, data=quotes, error=None)
 
 
+@router.get("/monthly-pnl", response_model=ApiResponse[list[dict]])
+def options_monthly_pnl(db: Session = Depends(get_db)) -> ApiResponse[list[dict]]:
+    """Realized P&L per resolved options trade, grouped by expiry date."""
+    data = OptionsService.get_monthly_pnl(db)
+    return ApiResponse(success=True, data=data, error=None)
+
+
 @router.get("/{id}", response_model=ApiResponse[OptionsTradeResponse])
 def get_option(id: int, db: Session = Depends(get_db)) -> ApiResponse[OptionsTradeResponse]:
     trade = OptionsService.get_trade(db, id)

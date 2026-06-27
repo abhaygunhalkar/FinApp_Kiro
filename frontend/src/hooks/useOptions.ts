@@ -13,6 +13,10 @@ export function useOpenTradeQuotes() {
   return useQuery({ queryKey: ['options', 'quotes'], queryFn: api.getOpenTradeQuotes });
 }
 
+export function useOptionsMonthlyPnl() {
+  return useQuery({ queryKey: ['options', 'monthly-pnl'], queryFn: api.getOptionsMonthlyPnl });
+}
+
 export function useCreateOption() {
   const qc = useQueryClient();
   return useMutation({
